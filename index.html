@@ -96,6 +96,9 @@
         </div>
       </div>
       <div id="pfYCBody"></div>
+      <p class="cap" style="margin:10px 0 0">*'24년도 실적은 규제샌드박스 실증특례 시행전 설치대수</p>
+      <p class="cap" style="margin:2px 0 0">**25년 유관기관 실적은 공단과 협력하여 수행</p>
+      <p class="cap" style="margin:2px 0 0">***26년 공단 실적은 국토부 출연금 사업으로만 분류하고, 공단 협력사업은 유관기관 사업에 포함</p>
     </div>
     <div class="card" id="pfCardRegion">
       <div class="card-head">
@@ -105,6 +108,7 @@
         </div>
       </div>
       <div id="pfRegionBody"></div>
+      <p class="cap" id="pfRegionNote" style="margin:10px 0 0"></p>
     </div>
     <div class="card" id="pfCardTarget">
       <div class="card-head">
@@ -247,10 +251,18 @@ function pfRenderDim(view, dimKey, targetId){
   var arr;
   if(dimKey==='target'){
     arr = PF_TARGET_ORDER.filter(function(n){ return map[n]>0; }).map(function(n){ return {name:n, val:map[n]}; });
+    arr.sort(function(a,b){ return b.val-a.val; });
   } else {
     arr = pfTopN(map, 10);
   }
   pfBarRows(document.getElementById(targetId), arr);
+  if(dimKey==='region'){
+    var full=[]; Object.keys(map).forEach(function(k){ full.push({name:k, val:map[k]}); });
+    full.sort(function(a,b){ return b.val-a.val; });
+    var rest = full.slice(10);
+    var noteEl = document.getElementById('pfRegionNote');
+    if(noteEl) noteEl.textContent = rest.length ? ('*기타로 분류한 대상지역 세부 지역명(대수): '+rest.map(function(e){ return e.name+'('+pfNum(e.val)+'대)'; }).join(', ')) : '';
+  }
 }
 
 function pfBindSeg(segId, fn){
